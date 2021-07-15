@@ -2,11 +2,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Piece {
-	private int x, y; //cords
-	private boolean isWhite; //whether white piece or not
-	enum PieceType {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING}
-	private PieceType type;
-	static private Set<Piece> pieces = new HashSet<Piece>();
+    int x, y; //cords
+    boolean isWhite; //whether white piece or not
+	public PieceType type;
+	static Set<Piece> pieces = new HashSet<Piece>();
 	public Piece(int x, int y, boolean isWhite, PieceType type) {
 		this.x = x; this.y = y; 
 		this.isWhite = isWhite;
