@@ -1,9 +1,10 @@
-
 import java.awt.*;
+import java.io.IOException;
+
 import javax.swing.*;
 
 public class board {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException{
 		final JFrame frame = new JFrame();
 		frame.setBounds(10, 10, 525, 549);
 	    JPanel panel = new JPanel() {
