@@ -19,7 +19,35 @@ public class board {
 				index++;
 			}
 		}
-		pieces.add(new Piece(3,3, false, PieceType.QUEEN));
+		for (int i = 0; i < 8; i++) {
+			pieces.add(new Piece(i, 1, false, PieceType.PAWN));
+			pieces.add(new Piece(i, 6, true, PieceType.PAWN));
+			switch(i) {
+			case 7:
+			case 0:
+				pieces.add(new Piece(i, 0, false, PieceType.ROOK));
+				pieces.add(new Piece(i, 7, true, PieceType.ROOK));
+				break;
+			case 1:
+			case 6:
+				pieces.add(new Piece(i, 0, false, PieceType.KNIGHT));
+				pieces.add(new Piece(i, 7, true, PieceType.KNIGHT));
+				break;
+			case 2:
+			case 5:
+				pieces.add(new Piece(i, 0, false, PieceType.BISHOP));
+				pieces.add(new Piece(i, 7, true, PieceType.BISHOP));
+				break;
+			case 3:
+				pieces.add(new Piece(i, 0, false, PieceType.QUEEN));
+				pieces.add(new Piece(i, 7, true, PieceType.QUEEN));
+				break;
+			case 4:
+				pieces.add(new Piece(i, 0, false, PieceType.KING));
+				pieces.add(new Piece(i, 7, true, PieceType.KING));
+				break;
+			}
+		}
 		final JFrame frame = new JFrame();
 		frame.setBounds(10, 10, 525, 549);
 	    JPanel panel = new JPanel() {
@@ -32,7 +60,7 @@ public class board {
 						g.setColor(Color.white);
 					}
 					else {
-						g.setColor(new Color(67, 121, 44));
+						g.setColor(new Color(120, 155, 85));
 					}
 					g.fillRect(x*64, y*64, 64, 64);
 				}
