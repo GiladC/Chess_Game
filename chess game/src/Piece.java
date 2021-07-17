@@ -12,19 +12,21 @@ public class Piece {
 		this.type = type;
 		pieces.add(this);
 	}
-	public void move(int i, int j) throws Exception{
+	public void move(int x, int y) throws Exception{
+		Piece pieceDest = null;  //this is the piece that is currently placed on (i, j)
 		for (Piece piece : pieces) {
-			if (piece.i == i && piece.j == j) {
+			if (piece.i == x && piece.j == y) {
 				if (piece.white == this.white) {
 					throw new Exception("You can't kill your own piece.");
 				}
-				this.i = i;	this.j = j;
-				piece.kill();  //kill method will be added later
+				this.i = x;	this.j = y;
+				pieceDest = piece;  //kill method will be added later
+				break;
 			}
 		}
-		this.i = i; this.j = j;
+		pieceDest.remove();
 	}
-	private void kill() {
+	private void remove() {
 		pieces.remove(this);
 	}
 }

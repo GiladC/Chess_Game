@@ -1,18 +1,22 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class board {
     static Piece currPiece = null; //the piece that was last clicked on
+	private static List<int[]> legalDests;
 	public static void main(String[] args) throws IOException{
+		legalDests = new ArrayList<>();
 		Set<Piece> pieces = Piece.pieces;
 		BufferedImage piecesImage = ImageIO.read(new File("chess_pieces.png"));
 		Image[] allPieces = new Image[12]; //6 pieces for black and 6 pieces for white.
@@ -54,20 +58,21 @@ public class board {
 		}
 		final JFrame frame = new JFrame();
 		frame.setBounds(10, 10, 525, 549);
-	    JPanel panel = new JPanel() {
-	    boolean legalDest(int x, int y) { //Checks whether x,y is a legal destination for currPiece.
-		   	if( x > 7 || y > 7 || x < 0 || y < 0) {
-		   		return false;
-		   	}
-		   	for (Piece piece : pieces) {
-		   		if (piece.i == x && piece.j == y && piece.white == currPiece.white) {
-		   			return false;
-		   		}
-		   	}
-		   	return true;
-	    }
-		    	
+	    JPanel panel = new JPanel() {	    	
 		private static final long serialVersionUID = -4396970882832779043L;
+        boolean checkDest(int x, int y) { //Checks whether x,y is a legal destination for currPiece, and adds it.
+	   	if( x > 8 || y > 7 || x < 0 || y < 0) {
+	   		return false;
+	   	}
+	   	for (Piece piece : pieces) {
+	   		if (piece.i == x && piece.j == y && piece.white == currPiece.white) {
+	   			return false;
+	   		}
+	   	}
+		int[] arr = {x, y};
+	   	legalDests.add(arr);
+	   	return true;
+        }
 		public void paint(Graphics g) {
 			super.paint(g);
 			for (int y = 0; y < 8; y++) {
@@ -79,6 +84,116 @@ public class board {
 						g.setColor(new Color(120, 155, 85));
 					}
 					g.fillRect(x*64, y*64, 64, 64);
+				}
+			}
+			if (currPiece != null) {
+				int xp = currPiece.i; int yp = currPiece.j;
+				g.setColor(new Color(51, 0, 103));
+				g.fillRect(64*xp, 64*yp, 64, 64);
+				g.setColor(new Color(51,255,255));
+				switch(currPiece.type) {
+				case KING: //has 8 optional moves 
+					if(checkDest(xp, yp +1)) { g.fillRect(1+64*xp,1+ 64*(yp+1), 62, 62); }
+					if(checkDest(xp, yp -1)) {g.fillRect(1+64*xp, 1+64*(yp-1), 62, 62); }
+					if(checkDest(xp -1, yp)) {g.fillRect(1+64*(xp-1),1+ 64*yp, 62, 62); }
+					if(checkDest(xp +1, yp)) {g.fillRect(1+64*(xp+1), 1+64*yp, 62, 62); }
+					if(checkDest(xp -1, yp-1)) {g.fillRect(1+64*(xp-1),1+ 64*(yp-1), 62, 62); }
+					if(checkDest(xp -1, yp+1)) {g.fillRect(1+64*(xp-1), 1+64*(yp+1), 62, 62); }
+					if(checkDest(xp +1, yp+1)) {g.fillRect(1+64*(xp+1), 1+64*(yp+1), 62, 62); }
+					if(checkDest(xp +1, yp-1)) {g.fillRect(1+64*(xp+1), 1+64*(yp-1), 62, 62); }
+					break;
+				case BISHOP:
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp +i,yp +i)) {break; }
+						g.fillRect(1+64*(xp+i), 1+64*(yp+i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp +i, yp -i)) { break; }
+						g.fillRect(1+64*(xp +i),1+ 64*(yp-i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp -i,yp -i)) {break; }
+						g.fillRect(1+64*(xp-i), 1+64*(yp-i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp -i, yp +i)) { break; }
+						g.fillRect(1+64*(xp -i),1+ 64*(yp+i), 62, 62);
+					}
+					break;
+				case KNIGHT:
+					if(checkDest(xp+2, yp +1)) { g.fillRect(1+64*(xp+2),1+ 64*(yp+1), 62, 62); }
+					if(checkDest(xp+2, yp -1)) { g.fillRect(1+64*(xp+2),1+ 64*(yp-1), 62, 62); }
+					if(checkDest(xp-2, yp +1)) { g.fillRect(1+64*(xp-2),1+ 64*(yp+1), 62, 62); }
+					if(checkDest(xp-2, yp -1)) { g.fillRect(1+64*(xp-2),1+ 64*(yp-1), 62, 62); }
+					if(checkDest(xp+1, yp +2)) { g.fillRect(1+64*(xp+1),1+ 64*(yp+2), 62, 62); }
+					if(checkDest(xp-1, yp +2)) { g.fillRect(1+64*(xp-1),1+ 64*(yp+2), 62, 62); }
+					if(checkDest(xp+1, yp -2)) { g.fillRect(1+64*(xp+1),1+ 64*(yp-2), 62, 62); }
+					if(checkDest(xp-1, yp -2)) { g.fillRect(1+64*(xp-1),1+ 64*(yp-2), 62, 62); }
+					break;
+				case PAWN:
+					if (currPiece.white) {
+						if(!checkDest(xp, yp -1)) { break;}
+						g.fillRect(1+64*xp,1+ 64*(yp-1), 62, 62);
+						if(checkDest(xp, yp-2) && yp == 6) { g.fillRect(1+64*xp, 1+64*(yp-2), 62, 62); }
+					}
+					else {
+						if (!checkDest(xp, yp +1)) { break;}
+						g.fillRect(1+64*xp, 1+64*(yp+1), 62, 62); 
+						if (yp == 1 && checkDest(xp, yp +2)) { g.fillRect(1+64*xp, 1+64*(yp+2), 62, 62); }
+					}
+					break;
+				case QUEEN:
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp,yp +i)) {break; }
+						g.fillRect(1+64*xp, 1+64*(yp+i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp +i, yp)) { break; }
+						g.fillRect(1+64*(xp +i),1+ 64*yp, 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp,yp -i)) {break; }
+						g.fillRect(1+64*xp, 1+64*(yp-i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp -i, yp)) { break; }
+						g.fillRect(1+64*(xp -i),1+ 64*yp, 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp +i,yp +i)) {break; }
+						g.fillRect(1+64*(xp+i), 1+64*(yp+i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp +i, yp -i)) { break; }
+						g.fillRect(1+64*(xp +i),1+ 64*(yp-i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp -i,yp -i)) {break; }
+						g.fillRect(1+64*(xp-i), 1+64*(yp-i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp -i, yp +i)) { break; }
+						g.fillRect(1+64*(xp -i),1+ 64*(yp+i), 62, 62);
+					}
+					break;
+				case ROOK:
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp,yp +i)) {break; }
+						g.fillRect(1+64*xp, 1+64*(yp+i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp +i, yp)) { break; }
+						g.fillRect(1+64*(xp +i),1+ 64*yp, 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp,yp -i)) {break; }
+						g.fillRect(1+64*xp, 1+64*(yp-i), 62, 62);
+					}
+					for (int i = 0; i < 8; i++) {
+						if (!checkDest(xp -i, yp)) { break; }
+						g.fillRect(1+64*(xp -i),1+ 64*yp, 62, 62);
+					}
+					break;
 				}
 			}
 			for (Piece piece : pieces) {
@@ -106,13 +221,6 @@ public class board {
 				if (!piece.white) { i += 6; }
 				g.drawImage(allPieces[i], piece.i*64, piece.j*64, this);
 			}
-			if (currPiece != null) {
-				g.setColor(new Color(51,255,255));
-				switch(currPiece.type) {
-				case KING: //has 8 optional moves 
-					
-				}
-			}
 		}
 	};
 	frame.addMouseListener(new MouseListener() {
@@ -131,9 +239,13 @@ public class board {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (currPiece == null) {
+			if (currPiece == null) { //painting the reachable blocks
 				currPiece = getPiece(e.getX(), e.getY());
-			}			
+			}		
+			else { //moving the piece to the block.
+				//the code
+				currPiece = null; legalDests.clear();
+			}
 		}
 
 		@Override
