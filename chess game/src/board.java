@@ -69,8 +69,6 @@ public class board {
 	   			return false;
 	   		}
 	   	}
-		int[] arr = {x, y};
-	   	legalDests.add(arr);
 	   	return true;
         }
 		public void paint(Graphics g) {
@@ -134,12 +132,20 @@ public class board {
 					if (currPiece.white) {
 						if(!checkDest(xp, yp -1)) { break;}
 						g.fillRect(1+64*xp,1+ 64*(yp-1), 62, 62);
-						if(checkDest(xp, yp-2) && yp == 6) { g.fillRect(1+64*xp, 1+64*(yp-2), 62, 62); }
+						int[] arr = {xp, yp-1};
+					   	legalDests.add(arr);
+						if(checkDest(xp, yp-2) && yp == 6) { g.fillRect(1+64*xp, 1+64*(yp-2), 62, 62); 
+						int[] arr2 = {xp, yp-2};
+					   	legalDests.add(arr2);}
 					}
 					else {
 						if (!checkDest(xp, yp +1)) { break;}
 						g.fillRect(1+64*xp, 1+64*(yp+1), 62, 62); 
-						if (yp == 1 && checkDest(xp, yp +2)) { g.fillRect(1+64*xp, 1+64*(yp+2), 62, 62); }
+						int[] arr = {xp, yp+1};
+					   	legalDests.add(arr);
+						if (yp == 1 && checkDest(xp, yp +2)) { g.fillRect(1+64*xp, 1+64*(yp+2), 62, 62); 
+						int[] arr2 = {xp, yp+2};
+					   	legalDests.add(arr2);}
 					}
 					break;
 				case QUEEN:
@@ -236,14 +242,30 @@ public class board {
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
 		}
-
+		boolean whiteTurn = true; //White moves first at chess.
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (currPiece == null) { //painting the reachable blocks
-				currPiece = getPiece(e.getX(), e.getY());
-			}		
-			else { //moving the piece to the block.
-				//the code
+				Piece p = getPiece(e.getX(), e.getY());
+				if (p != null) {
+					if (p.white == whiteTurn) {
+						currPiece = p;
+					}
+				}
+			}	
+			else { //moving the piece to the block. IMPORTANT: do !whiteTurn when you move the piece.
+				int x =  (int) Math.floor((e.getX()-7)/64);
+				int y = (int) Math.floor((e.getY()-30)/64);
+				for (int[] arr : legalDests) {
+					if (x == arr[0] && y == arr[1]) {
+						try {
+							currPiece.move(x, y);
+							whiteTurn = !whiteTurn;
+						} catch (Exception e1) {
+							System.out.println("Problem");
+						}
+					}
+				}
 				currPiece = null; legalDests.clear();
 			}
 		}

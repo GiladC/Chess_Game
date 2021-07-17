@@ -19,14 +19,13 @@ public class Piece {
 				if (piece.white == this.white) {
 					throw new Exception("You can't kill your own piece.");
 				}
-				this.i = x;	this.j = y;
 				pieceDest = piece;  //kill method will be added later
 				break;
 			}
 		}
-		pieceDest.remove();
-	}
-	private void remove() {
-		pieces.remove(this);
+		this.i = x;	this.j = y;
+		if (pieceDest != null) {
+			pieces.remove(pieceDest);
+		}
 	}
 }
