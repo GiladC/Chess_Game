@@ -1,4 +1,7 @@
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class board {
+    static Piece currPiece = null; //the piece that was last clicked on
 	public static void main(String[] args) throws IOException{
 		Set<Piece> pieces = Piece.pieces;
 		BufferedImage piecesImage = ImageIO.read(new File("chess_pieces.png"));
@@ -51,6 +55,18 @@ public class board {
 		final JFrame frame = new JFrame();
 		frame.setBounds(10, 10, 525, 549);
 	    JPanel panel = new JPanel() {
+	    boolean legalDest(int x, int y) { //Checks whether x,y is a legal destination for currPiece.
+		   	if( x > 7 || y > 7 || x < 0 || y < 0) {
+		   		return false;
+		   	}
+		   	for (Piece piece : pieces) {
+		   		if (piece.i == x && piece.j == y && piece.white == currPiece.white) {
+		   			return false;
+		   		}
+		   	}
+		   	return true;
+	    }
+		    	
 		private static final long serialVersionUID = -4396970882832779043L;
 		public void paint(Graphics g) {
 			super.paint(g);
@@ -66,7 +82,7 @@ public class board {
 				}
 			}
 			for (Piece piece : pieces) {
-				int i;
+				int i = 0;
 				switch(piece.type) {
 				case KING:
 					i = 0;
@@ -86,14 +102,57 @@ public class board {
 				case PAWN:
 					i = 5;
 					break;
-				default: //Effectively unreachable
-					i = 0;
 				}
-				if (!piece.isWhite) { i += 6; }
-				g.drawImage(allPieces[i], piece.x*64, piece.y*64, this);
+				if (!piece.white) { i += 6; }
+				g.drawImage(allPieces[i], piece.i*64, piece.j*64, this);
+			}
+			if (currPiece != null) {
+				g.setColor(new Color(51,255,255));
+				switch(currPiece.type) {
+				case KING: //has 8 optional moves 
+					
+				}
 			}
 		}
 	};
+	frame.addMouseListener(new MouseListener() {
+		public Piece getPiece(int x, int y) {		//get piece for mouse cords pressed
+			for (Piece piece : pieces) {
+				if (Math.floor((x-7)/64) == piece.i && Math.floor((y-30)/64) == piece.j) {
+					return piece;
+				}
+			}
+			return null;
+		}
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (currPiece == null) {
+				currPiece = getPiece(e.getX(), e.getY());
+			}			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			frame.repaint();
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}		
+	});
 	frame.add(panel);
 	frame.setDefaultCloseOperation(3);
 	frame.setVisible(true);
