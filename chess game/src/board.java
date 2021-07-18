@@ -214,7 +214,7 @@ public class board {
 							legalDests.add(arr1);
 						}
 						int k = checkDest(xp, yp + 1);
-						if (k == 0) { break;}
+						if (k != 1) { break;}
 						g.fillRect(1+64*xp, 1+64*(yp+1), 62, 62); 
 						int[] arr = {xp, yp+1};
 					   	legalDests.add(arr);
