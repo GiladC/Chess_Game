@@ -101,19 +101,19 @@ public class board {
 					if(checkDest(xp +1, yp-1)) {g.fillRect(1+64*(xp+1), 1+64*(yp-1), 62, 62); }
 					break;
 				case BISHOP:
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp +i,yp +i)) {break; }
 						g.fillRect(1+64*(xp+i), 1+64*(yp+i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp +i, yp -i)) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*(yp-i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp -i,yp -i)) {break; }
 						g.fillRect(1+64*(xp-i), 1+64*(yp-i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp -i, yp +i)) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*(yp+i), 62, 62);
 					}
@@ -149,53 +149,53 @@ public class board {
 					}
 					break;
 				case QUEEN:
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp,yp +i)) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp+i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp +i, yp)) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*yp, 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp,yp -i)) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp-i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp -i, yp)) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*yp, 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp +i,yp +i)) {break; }
 						g.fillRect(1+64*(xp+i), 1+64*(yp+i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp +i, yp -i)) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*(yp-i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp -i,yp -i)) {break; }
 						g.fillRect(1+64*(xp-i), 1+64*(yp-i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp -i, yp +i)) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*(yp+i), 62, 62);
 					}
 					break;
 				case ROOK:
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp,yp +i)) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp+i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp +i, yp)) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*yp, 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp,yp -i)) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp-i), 62, 62);
 					}
-					for (int i = 0; i < 8; i++) {
+					for (int i = 1; i < 8; i++) {
 						if (!checkDest(xp -i, yp)) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*yp, 62, 62);
 					}
