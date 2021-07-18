@@ -60,16 +60,21 @@ public class board {
 		frame.setBounds(10, 10, 525, 549);
 	    JPanel panel = new JPanel() {	    	
 		private static final long serialVersionUID = -4396970882832779043L;
-        boolean checkDest(int x, int y) { //Checks whether x,y is a legal destination for currPiece, and adds it.
+		/*ret = 0 iff not legal destination
+		  ret = 1 iff legal destination and NO enemy piece killed
+		  ret = 2 iff legal destination and enemy piece killed
+		  */
+        int checkDest(int x, int y) { 
 	   	if( x > 8 || y > 7 || x < 0 || y < 0) {
-	   		return false;
+	   		return 0;
 	   	}
 	   	for (Piece piece : pieces) {
-	   		if (piece.i == x && piece.j == y && piece.white == currPiece.white) {
-	   			return false;
+	   		if (piece.i == x && piece.j == y) {
+	   			if(piece.white == currPiece.white) { return 0; }
+	   			return 2;
 	   		}
 	   	}
-	   	return true;
+	   	return 1;
         }
 		public void paint(Graphics g) {
 			super.paint(g);
@@ -91,113 +96,231 @@ public class board {
 				g.setColor(new Color(51,255,255));
 				switch(currPiece.type) {
 				case KING: //has 8 optional moves 
-					if(checkDest(xp, yp +1)) { g.fillRect(1+64*xp,1+ 64*(yp+1), 62, 62); }
-					if(checkDest(xp, yp -1)) {g.fillRect(1+64*xp, 1+64*(yp-1), 62, 62); }
-					if(checkDest(xp -1, yp)) {g.fillRect(1+64*(xp-1),1+ 64*yp, 62, 62); }
-					if(checkDest(xp +1, yp)) {g.fillRect(1+64*(xp+1), 1+64*yp, 62, 62); }
-					if(checkDest(xp -1, yp-1)) {g.fillRect(1+64*(xp-1),1+ 64*(yp-1), 62, 62); }
-					if(checkDest(xp -1, yp+1)) {g.fillRect(1+64*(xp-1), 1+64*(yp+1), 62, 62); }
-					if(checkDest(xp +1, yp+1)) {g.fillRect(1+64*(xp+1), 1+64*(yp+1), 62, 62); }
-					if(checkDest(xp +1, yp-1)) {g.fillRect(1+64*(xp+1), 1+64*(yp-1), 62, 62); }
+					if(checkDest(xp, yp +1) != 0) { g.fillRect(1+64*xp,1+ 64*(yp+1), 62, 62); 
+					int[] arr = {xp, yp+1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp, yp -1) != 0) {g.fillRect(1+64*xp, 1+64*(yp-1), 62, 62); 
+					int[] arr = {xp, yp-1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp -1, yp) != 0) {g.fillRect(1+64*(xp-1),1+ 64*yp, 62, 62); 
+					int[] arr = {xp-1, yp};
+				   	legalDests.add(arr);}
+					if(checkDest(xp +1, yp) != 0) {g.fillRect(1+64*(xp+1), 1+64*yp, 62, 62); 
+					int[] arr = {xp+1, yp};
+				   	legalDests.add(arr);}
+					if(checkDest(xp -1, yp-1) != 0) {g.fillRect(1+64*(xp-1),1+ 64*(yp-1), 62, 62); 
+					int[] arr = {xp-1, yp-1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp -1, yp+1) != 0) {g.fillRect(1+64*(xp-1), 1+64*(yp+1), 62, 62); 
+					int[] arr = {xp-1, yp+1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp +1, yp+1) != 0) {g.fillRect(1+64*(xp+1), 1+64*(yp+1), 62, 62); 
+					int[] arr = {xp+1, yp+1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp +1, yp-1) != 0) {g.fillRect(1+64*(xp+1), 1+64*(yp-1), 62, 62); 
+					int[] arr = {xp+1, yp-1};
+				   	legalDests.add(arr);}
 					break;
 				case BISHOP:
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp +i,yp +i)) {break; }
+						int k = checkDest(xp +i, yp + i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*(xp+i), 1+64*(yp+i), 62, 62);
+						int[] arr = {xp+i, yp+i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp +i, yp -i)) { break; }
+						int k = checkDest(xp +i, yp - i);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*(yp-i), 62, 62);
+						int[] arr = {xp+i, yp-i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp -i,yp -i)) {break; }
+						int k = checkDest(xp -i, yp - i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*(xp-i), 1+64*(yp-i), 62, 62);
+						int[] arr = {xp-i, yp-i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp -i, yp +i)) { break; }
+						int k = checkDest(xp -i, yp + i);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*(yp+i), 62, 62);
+						int[] arr = {xp-i, yp+i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					break;
 				case KNIGHT:
-					if(checkDest(xp+2, yp +1)) { g.fillRect(1+64*(xp+2),1+ 64*(yp+1), 62, 62); }
-					if(checkDest(xp+2, yp -1)) { g.fillRect(1+64*(xp+2),1+ 64*(yp-1), 62, 62); }
-					if(checkDest(xp-2, yp +1)) { g.fillRect(1+64*(xp-2),1+ 64*(yp+1), 62, 62); }
-					if(checkDest(xp-2, yp -1)) { g.fillRect(1+64*(xp-2),1+ 64*(yp-1), 62, 62); }
-					if(checkDest(xp+1, yp +2)) { g.fillRect(1+64*(xp+1),1+ 64*(yp+2), 62, 62); }
-					if(checkDest(xp-1, yp +2)) { g.fillRect(1+64*(xp-1),1+ 64*(yp+2), 62, 62); }
-					if(checkDest(xp+1, yp -2)) { g.fillRect(1+64*(xp+1),1+ 64*(yp-2), 62, 62); }
-					if(checkDest(xp-1, yp -2)) { g.fillRect(1+64*(xp-1),1+ 64*(yp-2), 62, 62); }
+					if(checkDest(xp+2, yp +1) != 0) { g.fillRect(1+64*(xp+2),1+ 64*(yp+1), 62, 62); 
+					int[] arr = {xp+2, yp+1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp+2, yp -1) != 0) { g.fillRect(1+64*(xp+2),1+ 64*(yp-1), 62, 62); 
+					int[] arr = {xp+2, yp-1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp-2, yp +1) != 0) { g.fillRect(1+64*(xp-2),1+ 64*(yp+1), 62, 62); 
+					int[] arr = {xp-2, yp+1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp-2, yp -1) != 0) { g.fillRect(1+64*(xp-2),1+ 64*(yp-1), 62, 62); 
+					int[] arr = {xp-2, yp-1};
+				   	legalDests.add(arr);}
+					if(checkDest(xp+1, yp +2) != 0) { g.fillRect(1+64*(xp+1),1+ 64*(yp+2), 62, 62); 
+					int[] arr = {xp+1, yp+2};
+				   	legalDests.add(arr);}
+					if(checkDest(xp-1, yp +2) != 0) { g.fillRect(1+64*(xp-1),1+ 64*(yp+2), 62, 62); 
+					int[] arr = {xp-1, yp+2};
+				   	legalDests.add(arr);}
+					if(checkDest(xp+1, yp -2) != 0) { g.fillRect(1+64*(xp+1),1+ 64*(yp-2), 62, 62); 
+					int[] arr = {xp+1, yp-2};
+				   	legalDests.add(arr);}
+					if(checkDest(xp-1, yp -2) != 0) { g.fillRect(1+64*(xp-1),1+ 64*(yp-2), 62, 62); 
+					int[] arr = {xp-1, yp-2};
+				   	legalDests.add(arr);}
 					break;
 				case PAWN:
 					if (currPiece.white) {
-						if(!checkDest(xp, yp -1)) { break;}
+						if (checkDest(xp-1, yp-1) == 2) {
+							g.fillRect(1+64*(xp-1), 1+64*(yp-1), 62, 62);
+							int[] arr0 = {xp -1, yp-1};
+							legalDests.add(arr0);
+						}
+						if (checkDest(xp +1, yp -1) == 2) {
+							g.fillRect(1+64*(xp+1), 1+64*(yp-1), 62, 62);
+							int[] arr1 = {xp +1, yp-1};
+							legalDests.add(arr1);
+						}
+						int k = checkDest(xp, yp -1);
+						if(k != 1) { break;}
 						g.fillRect(1+64*xp,1+ 64*(yp-1), 62, 62);
-						int[] arr = {xp, yp-1};
+						int[] arr = {xp, yp-1}; 
 					   	legalDests.add(arr);
-						if(checkDest(xp, yp-2) && yp == 6) { g.fillRect(1+64*xp, 1+64*(yp-2), 62, 62); 
+						if(checkDest(xp, yp-2) == 1 && yp == 6) { g.fillRect(1+64*xp, 1+64*(yp-2), 62, 62); 
 						int[] arr2 = {xp, yp-2};
 					   	legalDests.add(arr2);}
 					}
 					else {
-						if (!checkDest(xp, yp +1)) { break;}
+						if (checkDest(xp-1, yp+1) == 2) {
+							g.fillRect(1+64*(xp-1), 1+64*(yp+1), 62, 62);
+							int[] arr0 = {xp -1, yp+1};
+							legalDests.add(arr0);
+						}
+						if (checkDest(xp +1, yp +1) == 2) {
+							g.fillRect(1+64*(xp+1), 1+64*(yp+1), 62, 62);
+							int[] arr1 = {xp +1, yp+1};
+							legalDests.add(arr1);
+						}
+						int k = checkDest(xp, yp + 1);
+						if (k == 0) { break;}
 						g.fillRect(1+64*xp, 1+64*(yp+1), 62, 62); 
 						int[] arr = {xp, yp+1};
 					   	legalDests.add(arr);
-						if (yp == 1 && checkDest(xp, yp +2)) { g.fillRect(1+64*xp, 1+64*(yp+2), 62, 62); 
+						if (yp == 1 && checkDest(xp, yp +2) != 0 && k == 1) { g.fillRect(1+64*xp, 1+64*(yp+2), 62, 62); 
 						int[] arr2 = {xp, yp+2};
 					   	legalDests.add(arr2);}
 					}
 					break;
 				case QUEEN:
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp,yp +i)) {break; }
+						int k = checkDest(xp, yp + i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp+i), 62, 62);
+						int[] arr = {xp, yp+i};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp +i, yp)) { break; }
+						int k = checkDest(xp + i, yp);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*yp, 62, 62);
+						int[] arr = {xp+i, yp};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp,yp -i)) {break; }
+						int k = checkDest(xp, yp - i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp-i), 62, 62);
+						int[] arr = {xp, yp-i};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp -i, yp)) { break; }
+						int k = checkDest(xp -i, yp);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*yp, 62, 62);
+						int[] arr = {xp-i, yp};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp +i,yp +i)) {break; }
+						int k = checkDest(xp +i, yp + i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*(xp+i), 1+64*(yp+i), 62, 62);
+						int[] arr = {xp+i, yp+i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp +i, yp -i)) { break; }
+						int k = checkDest(xp +i, yp - i);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*(yp-i), 62, 62);
+						int[] arr = {xp+i, yp-i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp -i,yp -i)) {break; }
+						int k = checkDest(xp -i, yp - i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*(xp-i), 1+64*(yp-i), 62, 62);
+						int[] arr = {xp-i, yp-i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp -i, yp +i)) { break; }
+						int k = checkDest(xp -i, yp + i);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*(yp+i), 62, 62);
+						int[] arr = {xp-i, yp+i};
+					   	legalDests.add(arr);
+					   	if (k == 2) { break; }
 					}
 					break;
 				case ROOK:
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp,yp +i)) {break; }
+						int k = checkDest(xp, yp + i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp+i), 62, 62);
+						int[] arr = {xp, yp+i};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp +i, yp)) { break; }
+						int k = checkDest(xp + i, yp);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp +i),1+ 64*yp, 62, 62);
+						int[] arr = {xp+i, yp};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp,yp -i)) {break; }
+						int k = checkDest(xp, yp - i);
+						if (k == 0) {break; }
 						g.fillRect(1+64*xp, 1+64*(yp-i), 62, 62);
+						int[] arr = {xp, yp-i};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					for (int i = 1; i < 8; i++) {
-						if (!checkDest(xp -i, yp)) { break; }
+						int k = checkDest(xp -i, yp);
+						if (k == 0) { break; }
 						g.fillRect(1+64*(xp -i),1+ 64*yp, 62, 62);
+						int[] arr = {xp-i, yp};
+					   	legalDests.add(arr);
+						if (k == 2) { break; }
 					}
 					break;
 				}
