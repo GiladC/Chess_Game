@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -14,7 +15,8 @@ import javax.swing.*;
 
 public class board {
     static Piece currPiece = null; //the piece that was last clicked on
-	private static List<int[]> legalDests;
+	private static List<int[]> legalDests; //all the legal destinations for the current piece, in cords (x,y)
+	static boolean Wlose = false, Blose = false; //either white or black lost
 	public static void main(String[] args) throws IOException{
 		legalDests = new ArrayList<>();
 		Set<Piece> pieces = Piece.pieces;
@@ -23,18 +25,19 @@ public class board {
 		int index = 0;
 		for(int i = 0; i < 400; i +=200) {
 			for(int j = 0; j < 1200; j+=200) {
-				allPieces[index] = piecesImage.getSubimage(j, i, 200, 200).getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH);
+				allPieces[index] = piecesImage.getSubimage(j, i, 200, 200) //just a way to get the pieces from the image
+						.getScaledInstance(64, 64, BufferedImage.SCALE_SMOOTH); 
 				index++;
 			}
 		}
 		for (int i = 0; i < 8; i++) {
-			pieces.add(new Piece(i, 1, false, PieceType.PAWN));
-			pieces.add(new Piece(i, 6, true, PieceType.PAWN));
-			switch(i) {
+			pieces.add(new Piece(i, 1, false, PieceType.PAWN)); //adds the black pawns
+			pieces.add(new Piece(i, 6, true, PieceType.PAWN));  // adds the white pawns
+			switch(i) { //adds all the other pieces based on their placement on the board
 			case 7:
 			case 0:
-				pieces.add(new Piece(i, 0, false, PieceType.ROOK));
-				pieces.add(new Piece(i, 7, true, PieceType.ROOK));
+				pieces.add(new Piece(i, 0, false, PieceType.ROOK)); 
+				pieces.add(new Piece(i, 7, true, PieceType.ROOK)); 
 				break;
 			case 1:
 			case 6:
@@ -65,16 +68,16 @@ public class board {
 		  ret = 2 iff legal destination and enemy piece killed
 		  */
         int checkDest(int x, int y) { 
-	   	if( x > 8 || y > 7 || x < 0 || y < 0) {
+	   	if( x > 7 || y > 7 || x < 0 || y < 0) { //can't go out of board
 	   		return 0;
 	   	}
 	   	for (Piece piece : pieces) {
 	   		if (piece.i == x && piece.j == y) {
-	   			if(piece.white == currPiece.white) { return 0; }
-	   			return 2;
+	   			if(piece.white == currPiece.white) { return 0; } //can't kill your own piece
+	   			return 2;  //kills a piece
 	   		}
 	   	}
-	   	return 1;
+	   	return 1; //a possible move without any piece being killed
         }
 		public void paint(Graphics g) {
 			super.paint(g);
@@ -86,16 +89,16 @@ public class board {
 					else {
 						g.setColor(new Color(120, 155, 85));
 					}
-					g.fillRect(x*64, y*64, 64, 64);
+					g.fillRect(x*64, y*64, 64, 64); //fill the squares of the board
 				}
 			}
 			if (currPiece != null) {
 				int xp = currPiece.i; int yp = currPiece.j;
 				g.setColor(new Color(51, 0, 103));
-				g.fillRect(64*xp, 64*yp, 64, 64);
-				g.setColor(new Color(51,255,255));
+				g.fillRect(64*xp, 64*yp, 64, 64); //the color that signs the piece that has been chosen
+				g.setColor(new Color(51,255,255)); //the color of the places the piece can go
 				switch(currPiece.type) {
-				case KING: //has 8 optional moves 
+				case KING: //all the moves possible for a king 
 					if(checkDest(xp, yp +1) != 0) { g.fillRect(1+64*xp,1+ 64*(yp+1), 62, 62); 
 					int[] arr = {xp, yp+1};
 				   	legalDests.add(arr);}
@@ -121,7 +124,7 @@ public class board {
 					int[] arr = {xp+1, yp-1};
 				   	legalDests.add(arr);}
 					break;
-				case BISHOP:
+				case BISHOP: //all the moves possible for a bishop
 					for (int i = 1; i < 8; i++) {
 						int k = checkDest(xp +i, yp + i);
 						if (k == 0) {break; }
@@ -155,7 +158,7 @@ public class board {
 					   	if (k == 2) { break; }
 					}
 					break;
-				case KNIGHT:
+				case KNIGHT: //all the moves possible for a knight
 					if(checkDest(xp+2, yp +1) != 0) { g.fillRect(1+64*(xp+2),1+ 64*(yp+1), 62, 62); 
 					int[] arr = {xp+2, yp+1};
 				   	legalDests.add(arr);}
@@ -181,9 +184,9 @@ public class board {
 					int[] arr = {xp-1, yp-2};
 				   	legalDests.add(arr);}
 					break;
-				case PAWN:
-					if (currPiece.white) {
-						if (checkDest(xp-1, yp-1) == 2) {
+				case PAWN:  //all the moves possible for a pawn
+					if (currPiece.white) { //if its white 
+						if (checkDest(xp-1, yp-1) == 2) { 
 							g.fillRect(1+64*(xp-1), 1+64*(yp-1), 62, 62);
 							int[] arr0 = {xp -1, yp-1};
 							legalDests.add(arr0);
@@ -194,7 +197,7 @@ public class board {
 							legalDests.add(arr1);
 						}
 						int k = checkDest(xp, yp -1);
-						if(k != 1) { break;}
+						if(k != 1) { break;} //can't kill in a straight line
 						g.fillRect(1+64*xp,1+ 64*(yp-1), 62, 62);
 						int[] arr = {xp, yp-1}; 
 					   	legalDests.add(arr);
@@ -202,7 +205,7 @@ public class board {
 						int[] arr2 = {xp, yp-2};
 					   	legalDests.add(arr2);}
 					}
-					else {
+					else { //if its black
 						if (checkDest(xp-1, yp+1) == 2) {
 							g.fillRect(1+64*(xp-1), 1+64*(yp+1), 62, 62);
 							int[] arr0 = {xp -1, yp+1};
@@ -223,7 +226,7 @@ public class board {
 					   	legalDests.add(arr2);}
 					}
 					break;
-				case QUEEN:
+				case QUEEN: //the moves possile for  a queen or the moves possible for a rook +  bishop 
 					for (int i = 1; i < 8; i++) {
 						int k = checkDest(xp, yp + i);
 						if (k == 0) {break; }
@@ -289,7 +292,7 @@ public class board {
 					   	if (k == 2) { break; }
 					}
 					break;
-				case ROOK:
+				case ROOK:  //all the moves possible for a rook
 					for (int i = 1; i < 8; i++) {
 						int k = checkDest(xp, yp + i);
 						if (k == 0) {break; }
@@ -327,7 +330,7 @@ public class board {
 			}
 			for (Piece piece : pieces) {
 				int i = 0;
-				switch(piece.type) {
+				switch(piece.type) { //deciding over a num based on what is the piece to be painted
 				case KING:
 					i = 0;
 					break;
@@ -348,7 +351,24 @@ public class board {
 					break;
 				}
 				if (!piece.white) { i += 6; }
-				g.drawImage(allPieces[i], piece.i*64, piece.j*64, this);
+				g.drawImage(allPieces[i], piece.i*64, piece.j*64, this); //adds the images of all the pieces
+			}
+			Wlose = true; Blose = true;
+			for (Piece p : pieces) { //checks whether white or black lost
+				if (p.type == PieceType.KING) {
+					if (p.white) { Wlose = false; }
+					else { Blose = false; }
+				}
+			}
+			Font f = g.getFont();
+			Font newFont = f.deriveFont(f.getSize() * 5F); //change the size of the win message
+			g.setFont(newFont);
+			g.setColor(new Color(0, 0, 153));
+			if (Wlose) { 
+				g.drawString("Black win", 126, 276);
+			}
+			if (Blose) {
+				g.drawString("White win", 126, 276);
 			}
 		}
 	};
@@ -365,18 +385,19 @@ public class board {
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
 		}
-		boolean whiteTurn = true; //White moves first at chess.
+		boolean whiteTurn = true; //White moves first at chess
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (currPiece == null) { //painting the reachable blocks
+			if (Wlose || Blose) { return; } //the game doesn't continue after someone lost
+			if (currPiece == null) { 
 				Piece p = getPiece(e.getX(), e.getY());
 				if (p != null) {
 					if (p.white == whiteTurn) {
-						currPiece = p;
+						currPiece = p; //updating the current piece
 					}
 				}
 			}	
-			else { //moving the piece to the block. IMPORTANT: do !whiteTurn when you move the piece.
+			else { //moving the piece to the block
 				int x =  (int) Math.floor((e.getX()-7)/64);
 				int y = (int) Math.floor((e.getY()-30)/64);
 				for (int[] arr : legalDests) {
@@ -395,7 +416,7 @@ public class board {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			frame.repaint();
+			frame.repaint(); //updating changes on board
 		}
 
 		@Override
