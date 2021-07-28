@@ -71,12 +71,19 @@ public class board {
          */
         boolean threatened(int x, int y, boolean isWhite) {
         	for (Piece p : pieces) {
-        		if (p.white != isWhite) {
-        			for (int[] arr : p.getDests()) {
-        				if (arr[0] == x && arr[1] == y) {
-        					return true;
-        				}
-        			}
+        		//pawns are a special case, since they only attack diagonally
+        		if (p.type == PieceType.PAWN && p.white != isWhite) {
+        			if (p.white && (x == p.i -1 || x == p.i +1) && y == p.j - 1) { return true; } 
+        			if (!p.white && (x == p.i -1 || x == p.i +1) && y == p.j +1 ) { return true; }
+        		}
+        		else {
+        	    	if (p.white != isWhite) {
+        		    	for (int[] arr : p.getDests()) {
+        			    	if (arr[0] == x && arr[1] == y) {
+        				    	return true;
+        	     	        }
+        		    	}
+        	    	}
         		}
         	}
         	return false;
@@ -266,7 +273,11 @@ public class board {
 								if (currPiece.i == 0 && currPiece.j == 7) { Wrook[0] = true; }
 								if (currPiece.i == 7 && currPiece.j == 7) { Wrook[1] = true; }
 							}
+							//queen promoting
 							currPiece.move(x, y);
+							if (currPiece.type == PieceType.PAWN && (currPiece.j == 0 || currPiece.j == 7)) {
+								currPiece.type = PieceType.QUEEN;
+							}
 							whiteTurn = !whiteTurn;
 							if (currPiece.type == PieceType.KING) {
 								if (currPiece.white) { Wking = true; }
